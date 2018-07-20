@@ -13,10 +13,10 @@ struct Type {
     enum Kind {
         case `class`
         case `struct`
-        case `enum`(Enum)
+        case `enum`(Enum?)
         
         
-        init?(structure: Structure) {
+        init?(typeNaem: String, structure: Structure) {
             
             switch structure.kind {
             case .some(.class):
@@ -24,11 +24,8 @@ struct Type {
             case .some(.struct):
                 self = .struct
             case .some(.enum):
-                if let enumType = Enum(structures: structure.substructures) {
-                    self = .enum(enumType)
-                } else {
-                    return nil
-                }
+                let enumType = Enum(typeNaem: typeNaem, structures: structure.substructures)
+                self = .enum(enumType)
                 
             default:
                 return nil
@@ -41,15 +38,11 @@ struct Type {
     let nestedTypes: [Type]
     
     init?(name: String? = nil, structure: Structure) {
-        
-        guard
-            let structureName = structure.name,
-            let kind = Kind(structure: structure) else { return nil }
-        
+        guard let structureName = structure.name else { return nil }
         let typeName = name.map { $0 + structureName } ?? structureName
+        guard let kind = Kind(typeNaem: typeName, structure: structure) else { return nil }
         self.name = typeName
         self.kind = kind
         nestedTypes = structure.substructures.compactMap { Type(name: typeName, structure: $0) }
-        
     }
 }

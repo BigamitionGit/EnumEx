@@ -10,6 +10,7 @@ import SourceKittenFramework
 
 struct Enum {
     
+    let name: String
     let cases: [String]
     
     private static func canExComputedProperty(structure: Structure)->Bool {
@@ -47,15 +48,14 @@ struct Enum {
         return enumElementStructure?.name
     }
     
-    init?(structures: [Structure]) {
-        // if it contains structure to can not generate computed property, it make this Failable Initializers
-        guard structures.contains(where:  { Enum.canExComputedProperty(structure: $0) == false }) else { return nil }
+    init?(typeNaem: String, structures: [Structure]) {
+        // if it contains structure to can not generate computed property, initialization failed
+        guard !structures.contains(where:  { Enum.canExComputedProperty(structure: $0) == false }) else { return nil }
         let enumCases = structures.filter(Enum.isEnumcase)
         let enumElements = enumCases.compactMap { Enum.toEnumElement(structures: $0.substructures) }
         if enumElements.isEmpty { return nil }
         
+        name = typeNaem
         cases = enumElements
     }
-    
 }
-
