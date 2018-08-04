@@ -35,10 +35,10 @@ struct CodeGenerator {
 
             {% for enum in enums %}
             extension {{ enum.name }} {
-                func name -> String {
+                func name() -> String {
                     switch self {
                         {% for caseName in enum.cases %}case .{{ caseName }}:
-                            return {{ caseName }}{% if not forloop.last %}
+                            return "{{ caseName }}"{% if not forloop.last %}
                         {% endif %}{% endfor %}
                     }
                 }
